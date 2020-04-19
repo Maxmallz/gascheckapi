@@ -85,13 +85,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 func dbHealth(w http.ResponseWriter, r *http.Request) {
 	dbDev, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
-	print(os.Getenv("DATABASE_URL"))
-
-	var dbCons = [2]string{}
-
 	if err != nil {
-		dbCons[0] = "hobby-dev connection failed"
-		log.Fatalf("Error opening database: %q", err)
+		json.NewEncoder(w).Encode("error opening database")
+		return
 	}
 
 	defer dbDev.Close()
@@ -99,32 +95,11 @@ func dbHealth(w http.ResponseWriter, r *http.Request) {
 	err = dbDev.Ping()
 
 	if err != nil {
-		dbCons[0] = "hobby-dev not reacheable"
-		log.Fatalf("Error opening database: %q", err)
-	} else {
-		dbCons[0] = "hobby-dev connected"
+		json.NewEncoder(w).Encode("ping failed")
+		return
 	}
 
-	dbBasic, err := sql.Open("postgres", os.Getenv("HEROKU_POSTGRESQL_COBALT_URL"))
-
-	print(os.Getenv("HEROKU_POSTGRESQL_COBALT_URL"))
-
-	if err != nil {
-		dbCons[1] = "hobby-basic connection failed"
-		log.Fatalf("Error opening database: %q", err)
-	}
-
-	defer dbBasic.Close()
-	err = dbBasic.Ping()
-
-	if err != nil {
-		dbCons[1] = "hobby-basic not reacheable"
-		log.Fatalf("Error opening database: %q", err)
-	} else {
-		dbCons[1] = "hobby-basic connected"
-	}
-
-	json.NewEncoder(w).Encode(dbCons)
+	json.NewEncoder(w).Encode("hobby-dev db connected")
 }
 
 type Car struct {
