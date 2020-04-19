@@ -63,7 +63,7 @@ func initializeRouter() {
 	}
 
 	router.HandleFunc("/cars", getCars).Methods("GET")
-	router.HandleFunc("/dbHealth", dbHealth).Methods("GET")
+	router.HandleFunc("/dbhealth", dbHealth).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
