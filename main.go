@@ -62,6 +62,7 @@ func initializeRouter() {
 		log.Fatal("$PORT must be set")
 	}
 
+	router.HandleFunc("/", index).Methods("GET")
 	router.HandleFunc("/cars", getCars).Methods("GET")
 	router.HandleFunc("/dbhealth", dbHealth).Methods("GET")
 
@@ -70,6 +71,10 @@ func initializeRouter() {
 
 func getCars(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(cars)
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("app is running")
 }
 
 type Car struct {
