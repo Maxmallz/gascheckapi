@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -34,7 +35,8 @@ func dbHealth(w http.ResponseWriter, r *http.Request) {
 	gormDb, err := gorm.Open("postgres", "user=postgres password=g@schekeR! dbname=GasCheck sslmode=disable")
 
 	if err != nil {
-		panic(err)
+		json.NewEncoder(w).Encode("db unhealty")
+		return
 	}
 
 	defer gormDb.Close()
@@ -54,10 +56,16 @@ func dbHealth(w http.ResponseWriter, r *http.Request) {
 func initializeRouter() {
 	router := mux.NewRouter()
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	router.HandleFunc("/cars", getCars).Methods("GET")
 	router.HandleFunc("/dbHealth", dbHealth).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 func getCars(w http.ResponseWriter, r *http.Request) {
