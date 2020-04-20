@@ -3,9 +3,11 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -83,16 +85,16 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func dbHealth(w http.ResponseWriter, r *http.Request) {
-	dbDev, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
 	if err != nil {
 		json.NewEncoder(w).Encode("error opening database")
 		return
 	}
 
-	defer dbDev.Close()
+	defer db.Close()
 
-	err = dbDev.Ping()
+	err = db.Ping()
 
 	if err != nil {
 		json.NewEncoder(w).Encode("ping failed")
@@ -100,6 +102,43 @@ func dbHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode("hobby-dev db connected")
+}
+
+func tick(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+
+	if err != nil {
+		json.NewEncoder(w).Encode("error opening database")
+		return
+	}
+
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
+		json.NewEncoder(w).Encode(fmt.Sprintf("error creating database table: %q", err))
+		return
+	}
+
+	if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
+		json.NewEncoder(w).Encode(fmt.Sprintf("error incrementing tick: %q", err))
+		return
+	}
+
+	rows, err := db.Query("SELECT tick FROM ticks")
+	if err != nil {
+		json.NewEncoder(w).Encode(fmt.Sprintf("error reading ticks: %q", err))
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tick time.Time
+		if err := rows.Scan(&tick); err != nil {
+			json.NewEncoder(w).Encode("error scanning ticks")
+			return
+		}
+
+		json.NewEncoder(w).Encode(fmt.Sprintf("Read from DB: %s\n", tick.String()))
+	}
 }
 
 type Car struct {
