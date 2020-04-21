@@ -32,7 +32,8 @@ func logFatal(err error) {
 func appendCars() {
 	cars = append(cars,
 		Car{Make: "Fiat", Model: "500X", Year: "2020"},
-		Car{Make: "Ford", Model: "Focus", Year: "2016"})
+		Car{Make: "Ford", Model: "Focus", Year: "2016"},
+		Car{Make: "Nissan", Model: "Versa", Year: "2020"})
 }
 
 func gormHealth(w http.ResponseWriter, r *http.Request) {
