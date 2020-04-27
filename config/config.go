@@ -97,17 +97,20 @@ func GetConnStr() string {
 
 func ConfigureEnv() {
 	if os.Getenv("APP_ENV") == "production" {
-		c.Environment = "production"
-		c.DbHost = os.Getenv("DB_HOST")
-		c.Database = os.Getenv("DATABASE")
 		port, err := strconv.Atoi(os.Getenv("DB_PORT"))
+
 		if err != nil {
 			panic(err)
 		}
-		c.DbPort = port
-		c.Username = os.Getenv("USERNAME")
-		c.Password = os.Getenv("PASSWORD")
-		c.SSLMode = os.Getenv("SSLMODE")
+
+		c = &Config{
+			Environment: os.Getenv("APP_ENV"),
+			Database:    os.Getenv("DATABASE"),
+			DbHost:      os.Getenv("DB_HOST"),
+			DbPort:      port,
+			Username:    os.Getenv("USERNAME"),
+			Password:    os.Getenv("PASSWORD"),
+			SSLMode:     os.Getenv("SSLMODE")}
 
 		return
 	}
