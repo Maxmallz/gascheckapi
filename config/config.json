@@ -1,0 +1,20 @@
+[
+    {
+        "environment": "local",
+        "dbHost": "",
+        "dbPort": 0,
+        "database": "",
+        "username": "",
+        "password": "",
+        "sslMode": ""
+    },
+    {
+        "environment": "production",
+        "dbHost": "",
+        "dbPort": 0,
+        "database": "",
+        "username": "",
+        "password": "",
+        "sslMode": ""
+    }
+]
