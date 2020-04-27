@@ -19,7 +19,6 @@ type Config struct {
 	Database    string
 	Username    string
 	Password    string
-	SSLMode     string
 }
 
 var envs = []string{"local", "production"}
@@ -91,7 +90,7 @@ func buiildConfig(env string) (*Config, error) {
 }
 
 func GetConnStr() string {
-	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.DbHost, c.DbPort, c.Username, c.Password, c.Database, c.SSLMode)
+	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", c.DbHost, c.DbPort, c.Username, c.Password, c.Database)
 	return conn
 }
 
@@ -109,8 +108,7 @@ func ConfigureEnv() {
 			DbHost:      os.Getenv("DB_HOST"),
 			DbPort:      port,
 			Username:    os.Getenv("USERNAME"),
-			Password:    os.Getenv("PASSWORD"),
-			SSLMode:     os.Getenv("SSLMODE")}
+			Password:    os.Getenv("PASSWORD")}
 
 		return
 	}

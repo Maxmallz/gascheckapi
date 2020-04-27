@@ -5,8 +5,7 @@
         "dbPort": 0,
         "database": "",
         "username": "",
-        "password": "",
-        "sslMode": ""
+        "password": ""
     },
     {
         "environment": "production",
@@ -14,7 +13,6 @@
         "dbPort": 0,
         "database": "",
         "username": "",
-        "password": "",
-        "sslMode": ""
+        "password": ""
     }
 ]
