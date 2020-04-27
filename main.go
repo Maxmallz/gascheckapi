@@ -161,8 +161,8 @@ func tick(w http.ResponseWriter, r *http.Request) {
 // }
 
 func getEnv(w http.ResponseWriter, r *http.Request) {
-	env := os.Getenv("APP_ENV")
-	json.NewEncoder(w).Encode(env)
+	arr := []string{os.Getenv("APP_ENV"), os.Getenv("PASSWORD"), os.Getenv("SSLMODE"), os.Getenv("USERNAME")}
+	json.NewEncoder(w).Encode(arr)
 }
 
 type Car struct {
