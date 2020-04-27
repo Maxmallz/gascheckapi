@@ -18,7 +18,6 @@ import (
 var cars []Car
 
 func main() {
-	//initializePG()
 	appendCars()
 	initializeRouter()
 }
@@ -64,7 +63,7 @@ func initializeRouter() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		log.Fatal("$PORT must be set")
+		port = "8000"
 	}
 
 	print("app is listening on port " + port)
@@ -74,6 +73,8 @@ func initializeRouter() {
 	router.HandleFunc("/dbhealth", dbHealth).Methods("GET")
 	router.HandleFunc("/gorm", gormHealth).Methods("GET")
 	router.HandleFunc("/tick", tick).Methods("GET")
+	//router.HandleFunc("/envVar", getEnvVar).Methods("GET")
+	router.HandleFunc("/env", getEnv).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
@@ -87,27 +88,38 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func dbHealth(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	// env := config.GetEnv()
 
-	if err != nil {
-		json.NewEncoder(w).Encode("error opening database")
-		return
-	}
+	// c, err := config.GetConfig(env)
 
-	defer db.Close()
+	// if err != nil {
+	// 	logFatal(err)
+	// }
+	// con := config.GetConnStr(c)
+	// db, err := sql.Open("postgres", con)
 
-	err = db.Ping()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	json.NewEncoder(w).Encode("error opening database")
+	// 	return
+	// }
 
-	if err != nil {
-		json.NewEncoder(w).Encode("ping failed")
-		return
-	}
+	// defer db.Close()
 
-	json.NewEncoder(w).Encode("hobby-dev db connected")
+	// err = db.Ping()
+
+	// if err != nil {
+	// 	json.NewEncoder(w).Encode("ping failed")
+	// 	return
+	// }
+
+	// json.NewEncoder(w).Encode("aws rds db connected")
 }
 
 func tick(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+
+	print(os.Getenv("DATABASE_URL"))
 
 	if err != nil {
 		json.NewEncoder(w).Encode("error opening database")
@@ -141,6 +153,16 @@ func tick(w http.ResponseWriter, r *http.Request) {
 
 		json.NewEncoder(w).Encode(fmt.Sprintf("Read from DB: %s\n", tick.String()))
 	}
+}
+
+// func getEnvVar(w http.ResponseWriter, r *http.Request) {
+// 	env := config.GetEnv()
+// 	json.NewEncoder(w).Encode(env)
+// }
+
+func getEnv(w http.ResponseWriter, r *http.Request) {
+	env := os.Getenv("APP_ENV")
+	json.NewEncoder(w).Encode(env)
 }
 
 type Car struct {
